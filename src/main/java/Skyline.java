@@ -40,7 +40,7 @@ public class Skyline {
             //FileSystem.getLocal(conf).delete(output, true);;
         } catch (ArrayIndexOutOfBoundsException e) {
             output = new Path("hdfs://localhost.localdomain/user/cloudera/out/");
-            //FileSystem.getLocal(conf).delete(output, true);
+            //FileSystem.getLocal(conf).delete(output, true);;
         }
 
         Job job = new Job(conf, "skyline");
