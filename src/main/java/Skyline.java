@@ -15,7 +15,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import java.io.IOException;
 
 /**
- * Created by jason on 2/26/14.
+ * Created by jason on 2/26/14
  */
 
 /**
