@@ -6,62 +6,56 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Created by jason on 3/2/14.
  */
 public class Map extends Mapper<LongWritable, Text, IntWritable, Weather> {
 
-    private IntWritable id = new IntWritable(1);
-    private Weather we = new Weather();
-    //private IntWritable we = new IntWritable(2);
+    private IntWritable id = new IntWritable();
 
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        String s;
         String line = value.toString();
-        //int start[] =   {0,18,31,42,53,64,74,84,88,103};
-        //int end[] =     {6,22,33,44,55,66,76,86,93,108};
 
         if (line.length() > 108) {
+            /**
+             * The file assumes a starting point of 1
+             * I need the following attributes from the file:
+             * StationID:   1-6     Int
+             * Year:        15-18   Int
+             * Moda:        19-22   Double
+             * Temp:        25-30   Double
+             * Dewp:        36-41   Double
+             * SLP:         47-52   Double
+             * Max:         103-108 Double
+             * STP:         58-63   Double
+             * WDSP:        79-83   Double
+             * MXSPD:       89-93   Double
+             * Gust:        96-100  Double
+             * Min:         111-116 Double
+             */
+
             // create the object to hold our data
             Weather w = new Weather();
-
-            // parse the string
-            s = line.substring(0, 6).replaceAll("\\s+", "");
-            id.set(Integer.parseInt(s));
-            w.setStation(Integer.parseInt(s));
-
-            s = line.substring(18, 22).replaceAll("\\s+", "");
-            w.setModa(Integer.parseInt(s)); /** Attribute 4, 19-22 **/ /** Min **/
-
-            s = line.substring(31, 33).replaceAll("\\s+", "");
-            w.setCountTemp(Double.parseDouble(s));/** Attribute 6, 32-33 **/ /** Min **/
-
-            s = line.substring(42, 44).replaceAll("\\s+", "");
-            w.setCountDewp(Double.parseDouble(s));/** Attribute 8, 43-44 **/ /** Min **/
-
-            s = line.substring(53, 55).replaceAll("\\s+", "");
-            w.setCountSlp(Integer.parseInt(s));/** Attribute 10, 54-55 **/ /** Max **/
-
-            s = line.substring(64, 66).replaceAll("\\s+", "");
-            w.setCountStp(Integer.parseInt(s));/** Attribute 12, 65-66 **/ /** Min **/
-
-            s = line.substring(74, 76).replaceAll("\\s+", "");
-            w.setCountVisib(Integer.parseInt(s));/** Attribute 14, 75-76 **/ /** Max **/
-
-            s = line.substring(84, 86).replaceAll("\\s+", "");
-            w.setCountWdsp(Integer.parseInt(s));/** Attribute 16, 85-86 **/ /** Max **/
-
-            s = line.substring(88, 93).replaceAll("\\s+", "");
-            w.setMxspd(Double.parseDouble(s));/** Attribute 17, 89-93 **/ /** Max **/
-
-            s = line.substring(103, 108).replaceAll("\\s+", "");
-            if (s.contains("*"))
-                s = s.substring(0, s.indexOf("*"));
-            w.setMax(Double.parseDouble(s));/** Attribute 19, 103-108 **/ /** Max **/
+            // write the id to our IntWritable
+            id.set(Integer.parseInt(line.substring(0, 6).replaceAll("\\s+", "").replaceAll("\\*", "")));
+            // Attributes of our weather object
+            w.setStation(line.substring(0, 6).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setYear(line.substring(14, 18).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setModa(line.substring(18, 22).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setTemp(line.substring(24, 30).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setDewp(line.substring(35, 41).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setSlp(line.substring(46, 52).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setMax(line.substring(102, 108).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setStp(line.substring(57, 63).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setWdsp(line.substring(78, 83).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setMxspd(line.substring(88, 93).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setGust(line.substring(95, 100).replaceAll("\\s+", "").replaceAll("\\*", ""));
+            w.setMin(line.substring(110, 116).replaceAll("\\s+", "").replaceAll("\\*", ""));
 
             // push the object onto our data structure
-            context.write(id, we);
+            context.write(id, w);
         }// if line>108
     }
 }// class
