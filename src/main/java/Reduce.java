@@ -13,8 +13,7 @@ public class Reduce extends Reducer<IntWritable, Weather, IntWritable, Text> {
 
     public void reduce(IntWritable key, Iterable<Weather> weather, Context context)
             throws IOException, InterruptedException {
-        //for(Weather w : weather) {
-        //    text.set(w.toString());
+            
         context.write(one, text);
     }
 }
