@@ -9,6 +9,8 @@ import java.io.IOException;
  */
 public class Weather implements Writable {
 
+    private long key;
+
     /**
      * Attribute 1, 1-6
      */
@@ -142,6 +144,10 @@ public class Weather implements Writable {
     public Weather() {
     }
 
+    public void setKey(long k) {
+        this.key = k;
+    }
+
     public void setStation(String m) {
         this.station = Integer.parseInt(m);
     }
@@ -235,6 +241,10 @@ public class Weather implements Writable {
      * Min: 111-116
      */
 
+    public long getKey() {
+        return this.key;
+    }
+
     public int getStation() {
         return this.station;
     }
@@ -312,7 +322,7 @@ public class Weather implements Writable {
          * Gust:        96-100  Double
          * Min:         111-116 Double
          */
-
+        this.key = in.readLong();
         this.station = in.readInt();
         this.year = in.readInt();
         this.moda = in.readInt();
@@ -334,6 +344,7 @@ public class Weather implements Writable {
      * @throws IOException in case we can't write to disk
      */
     public void write(DataOutput out) throws IOException {
+        out.writeLong(this.key);
         out.writeInt(this.station);
         out.writeInt(this.year);
         out.writeInt(this.moda);

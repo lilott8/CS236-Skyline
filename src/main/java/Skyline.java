@@ -23,20 +23,34 @@ import java.io.IOException;
  */
 public class Skyline {
 
+    private static long key = 0;
+
+    public static synchronized long getKey() {
+        return key++;
+    }
+
     public static void main(String[] args) throws IOException {
         //String s = args[0].length() > 0 ? args[0] : "skyline.in";
         Path input, output;
+        int reducers;
         Configuration conf = new Configuration();
 
         conf.set("io.serializations", "org.apache.hadoop.io.serializer.JavaSerialization,"
                 + "org.apache.hadoop.io.serializer.WritableSerialization");
+
         try {
-            input = new Path(args[0]);
+            reducers = Integer.parseInt(args[0]);
         } catch (ArrayIndexOutOfBoundsException e) {
-            input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
+            reducers = 1;
         }
         try {
-            output = new Path(args[1]);
+            input = new Path(args[1]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            input = new Path("hdfs://localhost/user/cloudera/in/small");
+            // input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
+        }
+        try {
+            output = new Path(args[2]);
             //FileSystem.getLocal(conf).delete(output, true);;
         } catch (ArrayIndexOutOfBoundsException e) {
             output = new Path("hdfs://localhost.localdomain/user/cloudera/out/");
@@ -55,6 +69,8 @@ public class Skyline {
 
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
+
+        job.setNumReduceTasks(reducers);
 
         FileInputFormat.addInputPath(job, input);
         FileOutputFormat.setOutputPath(job, output);

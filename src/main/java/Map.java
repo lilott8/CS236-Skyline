@@ -17,6 +17,12 @@ public class Map extends Mapper<LongWritable, Text, IntWritable, Weather> {
 
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
+        // get the number of reducertasks
+        int reducers = context.getNumReduceTasks();
+        // This is just a key to generate a unique key
+        long newKey = Skyline.getKey();
+        // generate the modulus for our weather object
+        long mod = newKey % reducers;
 
         if (line.length() > 108) {
             /**
@@ -38,9 +44,10 @@ public class Map extends Mapper<LongWritable, Text, IntWritable, Weather> {
 
             // create the object to hold our data
             Weather w = new Weather();
-            // write the id to our IntWritable
-            id.set(Integer.parseInt(line.substring(0, 6).replaceAll("\\s+", "").replaceAll("\\*", "")));
+            // write the id to our LongWritable
+            id.set((int) mod);
             // Attributes of our weather object
+            w.setKey(newKey);
             w.setStation(line.substring(0, 6).replaceAll("\\s+", "").replaceAll("\\*", ""));
             w.setYear(line.substring(14, 18).replaceAll("\\s+", "").replaceAll("\\*", ""));
             w.setModa(line.substring(18, 22).replaceAll("\\s+", "").replaceAll("\\*", ""));
