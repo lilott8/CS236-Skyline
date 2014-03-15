@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: Skyline
+Main-Class: edu.cs236.skyline.Skyline
 
