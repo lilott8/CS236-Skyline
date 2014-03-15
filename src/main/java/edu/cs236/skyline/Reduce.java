@@ -6,19 +6,20 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.Map;
 
 /**
  * Created by jason on 3/2/14.
  */
-public class Reduce extends Reducer<IntWritable, Weather, LongWritable, Text> {
+public class Reduce extends Reducer<IntWritable, Weather, LongWritable, Weather> {
     //private static final int dominates = 9;
     private static final int equivalent = 8;
 
     private LongWritable one = new LongWritable();
     //private IntWritable two = new IntWritable();
     private Text two = new Text();
-    private ArrayList<Weather> skyline = new ArrayList<Weather>();
+    private HashMap<Long, Weather> skylineMap = new HashMap<Long, Weather>();
 
     public static int minComp(double node, double skyline) {
         if (node < skyline) {
@@ -42,26 +43,88 @@ public class Reduce extends Reducer<IntWritable, Weather, LongWritable, Text> {
 
     public void reduce(IntWritable key, Iterable<Weather> weather, Context context)
             throws IOException, InterruptedException {
-        int dominates;
+        // Node array
         for (Weather wOuter : weather) {
-            if (this.skyline.isEmpty()) {
-                this.skyline.add(wOuter);
+            if (this.skylineMap.isEmpty()) {
+                this.skylineMap.put(wOuter.getKey(), wOuter);
             } else {
-                for (Weather wInner : skyline) {
-                    dominates = wOuter.compareTo(wInner);
-                    int maxTemp = maxComp(wOuter.getTemp(), wInner.getTemp());
-                    int maxDewp = maxComp(wOuter.getDewp(), wInner.getDewp());
-                    int maxSlp = maxComp(wOuter.getSlp(), wInner.getSlp());
-                    int minStp = minComp(wOuter.getStp(), wInner.getStp());
-                    int minWdsp = minComp(wOuter.getWdsp(), wInner.getWdsp());
-                    int maxMxspd = minComp(wOuter.getMxspd(), wInner.getMxspd());
-                    int minGust = minComp(wOuter.getGust(), wInner.getGust());
-                    int maxMax = maxComp(wOuter.getMax(), wInner.getMax());
-                    int minMin = minComp(wOuter.getMin(), wInner.getMin());
+                // Skyline array
+                for (Map.Entry<Long, Weather> wInner : skylineMap.entrySet()) {
+                    int skyline = 0;
+                    int node = 0;
+
+                    int maxTemp = maxComp(wOuter.getTemp(), wInner.getValue().getTemp());
+                    int maxDewp = maxComp(wOuter.getDewp(), wInner.getValue().getDewp());
+                    int maxSlp = maxComp(wOuter.getSlp(), wInner.getValue().getSlp());
+                    int minStp = minComp(wOuter.getStp(), wInner.getValue().getStp());
+                    int minWdsp = minComp(wOuter.getWdsp(), wInner.getValue().getWdsp());
+                    int maxMxspd = minComp(wOuter.getMxspd(), wInner.getValue().getMxspd());
+                    int minGust = minComp(wOuter.getGust(), wInner.getValue().getGust());
+                    int maxMax = maxComp(wOuter.getMax(), wInner.getValue().getMax());
+                    int minMin = minComp(wOuter.getMin(), wInner.getValue().getMin());
                     //https://github.com/rweeks/util/blob/master/src/com/newbrightidea/util/RTree.java
-                }
+
+                    if (maxTemp <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (maxDewp <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (maxSlp <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (minStp <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (minWdsp <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (maxMxspd <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (minGust <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (maxMax <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (minMin <= 0) {
+                        skyline++;
+                    } else {
+                        node++;
+                    }
+
+                    if (node > skyline) {
+                        if (!skylineMap.containsKey(wOuter.getKey()))
+                            skylineMap.put(wOuter.getKey(), wOuter);
+                    }
+                }// skyline
             }
-        }
+        } // for nodes
          /*
          for(Weather w : weather) {
             one.set(w.getKey());
@@ -71,6 +134,10 @@ public class Reduce extends Reducer<IntWritable, Weather, LongWritable, Text> {
             context.write(one, two);
          }*/
         //context.write(one, text);
+        for (Map.Entry<Long, Weather> w : skylineMap.entrySet()) {
+            one.set(w.getKey());
+            context.write(one, skylineMap.get(w.getKey()));
+        }
     }
 
 }

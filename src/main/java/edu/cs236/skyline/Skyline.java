@@ -3,6 +3,7 @@ package edu.cs236.skyline;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -58,7 +59,7 @@ public class Skyline {
 
         job.setJarByClass(Skyline.class);
 
-        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputKeyClass(LongWritable.class);
         job.setOutputValueClass(Weather.class);
 
         job.setMapperClass(Map.class);
@@ -71,6 +72,7 @@ public class Skyline {
 
         FileInputFormat.addInputPath(job, input);
         FileOutputFormat.setOutputPath(job, output);
+
         try {
             job.waitForCompletion(true);
         } catch (InterruptedException e) {
