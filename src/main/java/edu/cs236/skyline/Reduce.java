@@ -54,10 +54,10 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                 // Skyline array
                 boolean addToSkyline = false;
                 for (Map.Entry<Long, Weather> wInner : skylineMap.entrySet()) {
-                    System.out.println("Comparing: ");
-                    System.out.println("Node: " + wOuter.toString());
-                    System.out.println("Skyline: " + wInner.getValue().toString());
-                    System.out.println("====================================");
+                    Log.d("Comparing: ");
+                    Log.d("Node: " + wOuter.toString());
+                    Log.d("Skyline: " + wInner.getValue().toString());
+                    Log.d("====================================");
                     int skyline = 0;
                     int node = 0;
 
@@ -72,63 +72,63 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                     int minMin = minComp(wOuter.getMin(), wInner.getValue().getMin());
                     //https://github.com/rweeks/util/blob/master/src/com/newbrightidea/util/RTree.java
 
-                    System.out.println("MaxTemp: " + maxTemp);
+                    Log.d("MaxTemp: " + maxTemp);
                     if (maxTemp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MaxDewp: " + maxDewp);
+                    Log.d("MaxDewp: " + maxDewp);
                     if (maxDewp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MaxSLP: " + maxSlp);
+                    Log.d("MaxSLP: " + maxSlp);
                     if (maxSlp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MinSTP: " + minStp);
+                    Log.d("MinSTP: " + minStp);
                     if (minStp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MinWdsp: " + minWdsp);
+                    Log.d("MinWdsp: " + minWdsp);
                     if (minWdsp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MaxMxspd: " + maxMxspd);
+                    Log.d("MaxMxspd: " + maxMxspd);
                     if (maxMxspd <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MinGust: " + minGust);
+                    Log.d("MinGust: " + minGust);
                     if (minGust <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MaxMax: " + maxMax);
+                    Log.d("MaxMax: " + maxMax);
                     if (maxMax <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    System.out.println("MinMin: " + minMin);
+                    Log.d("MinMin: " + minMin);
                     if (minMin <= 0) {
                         skyline++;
                     } else {
@@ -152,7 +152,7 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                 if (addToSkyline) {
                     skylineMap.put(wOuter.getKey(), wOuter);
                 }
-                System.out.println("====================================");
+                Log.d("====================================");
             }
         } // for nodes
          /*

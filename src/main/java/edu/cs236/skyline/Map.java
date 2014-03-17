@@ -21,7 +21,7 @@ public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
         // This is just a key to generate a unique key
         long newKey = Skyline.getKey();
         // generate the modulus for our weather object
-        long mod = newKey % reducers;
+        long mod = newKey % Skyline.getMod();
 
         if (line.length() > 108) {
             /**
