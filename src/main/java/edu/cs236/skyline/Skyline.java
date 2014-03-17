@@ -22,6 +22,7 @@ import java.io.IOException;
 public class Skyline {
 
     private static long key = 0;
+    // we want this to start at 50k for 11000000 records
     private static int mod = 1000;
 
     public static synchronized long getKey() {
@@ -71,7 +72,7 @@ public class Skyline {
             job.setJarByClass(Skyline.class);
 
             try {
-                output = new Path(args[2]);
+                output = new Path(args[2] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
                 output = new Path("hdfs://localhost.localdomain/user/cloudera/out/" + x);
             }
@@ -101,7 +102,7 @@ public class Skyline {
             }
 
             try {
-                input = new Path(args[1] + "/" + x);
+                input = new Path(args[1] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
                 input = new Path("hdfs://localhost/user/cloudera/out/" + x);
                 //input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
