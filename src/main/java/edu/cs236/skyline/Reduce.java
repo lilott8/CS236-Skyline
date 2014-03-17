@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by jason on 3/2/14.
  */
-public class Reduce extends Reducer<IntWritable, Weather, LongWritable, Weather> {
+public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather> {
     //private static final int dominates = 9;
     private static final int equivalent = 8;
 
@@ -41,15 +41,23 @@ public class Reduce extends Reducer<IntWritable, Weather, LongWritable, Weather>
         }
     }
 
-    public void reduce(IntWritable key, Iterable<Weather> weather, Context context)
-            throws IOException, InterruptedException {
+    public void reduce(LongWritable key, Iterable<Weather> weather, Context context)
+    throws IOException, InterruptedException {
         // Node array
-        for (Weather wOuter : weather) {
+        for (Weather nodes : weather) {
+            Weather wOuter = new Weather();
+            wOuter.copyObject(nodes);
+
             if (this.skylineMap.isEmpty()) {
                 this.skylineMap.put(wOuter.getKey(), wOuter);
             } else {
                 // Skyline array
+                boolean addToSkyline = false;
                 for (Map.Entry<Long, Weather> wInner : skylineMap.entrySet()) {
+                    System.out.println("Comparing: ");
+                    System.out.println("Node: " + wOuter.toString());
+                    System.out.println("Skyline: " + wInner.getValue().toString());
+                    System.out.println("====================================");
                     int skyline = 0;
                     int node = 0;
 
@@ -64,65 +72,87 @@ public class Reduce extends Reducer<IntWritable, Weather, LongWritable, Weather>
                     int minMin = minComp(wOuter.getMin(), wInner.getValue().getMin());
                     //https://github.com/rweeks/util/blob/master/src/com/newbrightidea/util/RTree.java
 
+                    System.out.println("MaxTemp: " + maxTemp);
                     if (maxTemp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MaxDewp: " + maxDewp);
                     if (maxDewp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MaxSLP: " + maxSlp);
                     if (maxSlp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MinSTP: " + minStp);
                     if (minStp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MinWdsp: " + minWdsp);
                     if (minWdsp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MaxMxspd: " + maxMxspd);
                     if (maxMxspd <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MinGust: " + minGust);
                     if (minGust <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MaxMax: " + maxMax);
                     if (maxMax <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    System.out.println("MinMin: " + minMin);
                     if (minMin <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
+                    if (node == 0) {
+                        break;
+                    } else if (skyline == 0) {
+                        addToSkyline = true;
+                        skylineMap.remove(wInner.getKey());
+                        break;
+                    }
+                    addToSkyline = true;
+                    /*
                     if (node > skyline) {
                         if (!skylineMap.containsKey(wOuter.getKey()))
                             skylineMap.put(wOuter.getKey(), wOuter);
-                    }
+                    }*/
                 }// skyline
+                if (addToSkyline) {
+                    skylineMap.put(wOuter.getKey(), wOuter);
+                }
+                System.out.println("====================================");
             }
         } // for nodes
          /*

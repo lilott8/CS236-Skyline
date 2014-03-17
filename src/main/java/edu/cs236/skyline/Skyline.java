@@ -44,7 +44,7 @@ public class Skyline {
         try {
             input = new Path(args[1]);
         } catch (ArrayIndexOutOfBoundsException e) {
-            input = new Path("hdfs://localhost/user/cloudera/in/small");
+            input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
             // input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
         }
         try {

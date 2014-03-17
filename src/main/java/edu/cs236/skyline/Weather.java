@@ -361,6 +361,22 @@ public class Weather implements Writable, Comparable<Weather> {
         out.writeDouble(this.min);
     }
 
+    public void copyObject(Weather in) {
+        this.key = in.getKey();
+        this.station = in.getStation();
+        this.year = in.getYear();
+        this.moda = in.getModa();
+        this.temp = in.getTemp();
+        this.dewp = in.getDewp();
+        this.slp = in.getSlp();
+        this.max = in.getMax();
+        this.stp = in.getStp();
+        this.wdsp = in.getWdsp();
+        this.mxspd = in.getMxspd();
+        this.gust = in.getGust();
+        this.min = in.getMin();
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
 

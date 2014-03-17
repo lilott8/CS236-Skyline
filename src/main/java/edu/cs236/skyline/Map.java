@@ -10,9 +10,9 @@ import java.io.IOException;
 /**
  * Created by jason on 3/2/14.
  */
-public class Map extends Mapper<LongWritable, Text, IntWritable, Weather> {
+public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
 
-    private IntWritable id = new IntWritable();
+    private LongWritable id = new LongWritable();
 
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
@@ -44,7 +44,7 @@ public class Map extends Mapper<LongWritable, Text, IntWritable, Weather> {
             // create the object to hold our data
             Weather w = new Weather();
             // write the id to our LongWritable
-            id.set((int) mod);
+            id.set(mod);
             // Attributes of our weather object
             w.setKey(newKey);
             w.setStation(line.substring(0, 6).replaceAll("\\s+", "").replaceAll("\\*", ""));
