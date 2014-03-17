@@ -40,7 +40,7 @@ public class Weather implements Writable, Comparable<Weather> {
 
     /**
      * Attribute 6, 32-33
-     **/
+     */
     private double countTemp;
 
     /**
@@ -60,7 +60,7 @@ public class Weather implements Writable, Comparable<Weather> {
 
     /**
      * Attribute 10, 54-55
-     **/
+     */
     private int countSlp;
 
     /**
@@ -70,7 +70,7 @@ public class Weather implements Writable, Comparable<Weather> {
 
     /**
      * Attribute 12, 65-66
-     **/
+     */
     private int countStp;
 
     /**
@@ -80,7 +80,7 @@ public class Weather implements Writable, Comparable<Weather> {
 
     /**
      * Attribute 14, 75-76
-     **/
+     */
     private int countVisib;
 
     /**
@@ -359,6 +359,18 @@ public class Weather implements Writable, Comparable<Weather> {
         out.writeDouble(this.mxspd);
         out.writeDouble(this.gust);
         out.writeDouble(this.min);
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(this.key).append("|").append(this.station).append("|").append(this.year).append("|");
+        sb.append(this.moda).append("|").append(this.temp).append("|").append(this.dewp).append("|");
+        sb.append(this.slp).append("|").append(this.stp).append("|").append(this.max).append("|");
+        sb.append(this.wdsp).append("|").append(this.mxspd).append("|").append(this.gust).append("|");
+        sb.append(this.min);
+
+        return sb.toString();
     }
 
     /**
