@@ -16,7 +16,6 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
     private LongWritable one = new LongWritable();
     //private IntWritable two = new IntWritable();
     private Text two = new Text();
-    private HashMap<Long, Weather> skylineMap = new HashMap<Long, Weather>();
     public String TAG = "reduce";
 
     public static int minComp(double node, double skyline) {
@@ -41,13 +40,14 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
 
     public void reduce(LongWritable key, Iterable<Weather> weather, Context context)
     throws IOException, InterruptedException {
+        HashMap<Long, Weather> skylineMap = new HashMap<Long, Weather>();
         // Node array
         for (Weather nodes : weather) {
             Weather wOuter = new Weather();
             wOuter.copyObject(nodes);
 
-            if (this.skylineMap.isEmpty()) {
-                this.skylineMap.put(wOuter.getKey(), wOuter);
+            if (skylineMap.isEmpty()) {
+                skylineMap.put(wOuter.getKey(), wOuter);
             } else {
                 // Skyline array
                 boolean addToSkyline = false;
@@ -153,14 +153,6 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                 // Log.d(TAG, "====================================");
             }
         } // for nodes
-         /*
-         for(Weather w : weather) {
-            one.set(w.getKey());
-            int tid = context.getTaskAttemptID().getId();
-            two.set(Integer.toString(w.getStation()) + "\t" + tid);
-
-            context.write(one, two);
-         }*/
         //context.write(one, text);
         for (Map.Entry<Long, Weather> w : skylineMap.entrySet()) {
             one.set(w.getKey());

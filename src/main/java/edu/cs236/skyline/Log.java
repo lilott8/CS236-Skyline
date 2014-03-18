@@ -5,7 +5,7 @@ package edu.cs236.skyline;
  */
 public abstract class Log {
 
-    public static boolean print = true;
+    public static boolean print = false;
 
     public static void d(String tag, String message) {
         String out = String.format("%s:\t%s", tag, message);
