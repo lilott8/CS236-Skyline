@@ -21,7 +21,7 @@ public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
         String weatherString = weather.toString();
         // create the object to hold our data
         Weather w = new Weather();
-        System.out.println("Attempting to parse: " + weather);
+        Log.d(TAG, "Attempting to parse: " + weather);
         // write the id to our LongWritable
         //id.set(mod);
 
@@ -58,21 +58,22 @@ public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
         this.min = in.readDouble();
 
         */
-        List<String> values = new ArrayList<String>(Arrays.asList(weatherString.split("\\s*|\\s*")));
-        System.out.println("Size of values: " + values.size());
-        Log.d(TAG, "Parsed:" + weatherString + " into array");
+        List<String> values = new ArrayList<String>(Arrays.asList(weatherString.split("\\|")));
+        //Log.d(TAG, "Size of values: " + values.size());
+        //Log.d(TAG, "Parsed:" + weatherString + " into array");
         // Attributes of our weather object
-        Log.d(TAG, "Parsed key: " + w.getKey());
-        w.setKey(Long.parseLong(values.get(0)));
-        Log.d(TAG, "Parsed station: " + w.getStation());
+        List<String> theKeys = Arrays.asList(values.get(0).split("\\s+"));
+        //Log.d(TAG, "Parsed key: " + theKeys.get(1));
+        w.setKey(Long.parseLong(theKeys.get(1)));
+        //Log.d(TAG, "Parsed station: " + w.getStation());
         w.setStation(values.get(1));
-        Log.d(TAG, "Parsed station: " + values.get(2));
+        //Log.d(TAG, "Parsed station: " + values.get(2));
         w.setYear(values.get(2));
-        Log.d(TAG, "Parsed station: " + values.get(3));
+        //Log.d(TAG, "Parsed station: " + values.get(3));
         w.setModa(values.get(3));
-        Log.d(TAG, "Parsed station: " + values.get(4));
+        //Log.d(TAG, "Parsed station: " + values.get(4));
         w.setTemp(values.get(4));
-        Log.d(TAG, "Parsed station: " + values.get(5));
+        //Log.d(TAG, "Parsed station: " + values.get(5));
         w.setDewp(values.get(5));
         w.setSlp(values.get(6));
         w.setMax(values.get(7));

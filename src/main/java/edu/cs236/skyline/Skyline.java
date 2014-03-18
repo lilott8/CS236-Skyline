@@ -21,6 +21,7 @@ import java.io.IOException;
  */
 public class Skyline {
 
+    public static String TAG = "skyline";
     private static long key = 0;
     // we want this to start at 50k for 11000000 records
     private static int mod = 100;
@@ -62,6 +63,7 @@ public class Skyline {
 
         while (getMod() >= 1) {
 
+            Log.d(TAG, "getMod: " + getMod() + "\tx: " + x);
             Job job = new Job(conf, "skyline");
 
             job.setJarByClass(Skyline.class);

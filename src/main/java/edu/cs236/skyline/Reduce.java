@@ -13,13 +13,11 @@ import java.util.Map;
  * Created by jason on 3/2/14.
  */
 public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather> {
-    //private static final int dominates = 9;
-    private static final int equivalent = 8;
-
     private LongWritable one = new LongWritable();
     //private IntWritable two = new IntWritable();
     private Text two = new Text();
     private HashMap<Long, Weather> skylineMap = new HashMap<Long, Weather>();
+    public String TAG = "reduce";
 
     public static int minComp(double node, double skyline) {
         if (node < skyline) {
@@ -54,10 +52,10 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                 // Skyline array
                 boolean addToSkyline = false;
                 for (Map.Entry<Long, Weather> wInner : skylineMap.entrySet()) {
-                    Log.d("Comparing: ");
-                    Log.d("Node: " + wOuter.toString());
-                    Log.d("Skyline: " + wInner.getValue().toString());
-                    Log.d("====================================");
+                    // Log.d(TAG, "Comparing: ");
+                    // Log.d(TAG, "Node: " + wOuter.toString());
+                    // Log.d(TAG, "Skyline: " + wInner.getValue().toString());
+                    // Log.d(TAG, "====================================");
                     int skyline = 0;
                     int node = 0;
 
@@ -72,63 +70,63 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                     int minMin = minComp(wOuter.getMin(), wInner.getValue().getMin());
                     //https://github.com/rweeks/util/blob/master/src/com/newbrightidea/util/RTree.java
 
-                    Log.d("MaxTemp: " + maxTemp);
+                    // Log.d(TAG, "MaxTemp: " + maxTemp);
                     if (maxTemp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MaxDewp: " + maxDewp);
+                    // Log.d(TAG, "MaxDewp: " + maxDewp);
                     if (maxDewp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MaxSLP: " + maxSlp);
+                    // Log.d(TAG, "MaxSLP: " + maxSlp);
                     if (maxSlp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MinSTP: " + minStp);
+                    // Log.d(TAG, "MinSTP: " + minStp);
                     if (minStp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MinWdsp: " + minWdsp);
+                    // Log.d(TAG, "MinWdsp: " + minWdsp);
                     if (minWdsp <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MaxMxspd: " + maxMxspd);
+                    // Log.d(TAG, "MaxMxspd: " + maxMxspd);
                     if (maxMxspd <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MinGust: " + minGust);
+                    // Log.d(TAG, "MinGust: " + minGust);
                     if (minGust <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MaxMax: " + maxMax);
+                    // Log.d(TAG, "MaxMax: " + maxMax);
                     if (maxMax <= 0) {
                         skyline++;
                     } else {
                         node++;
                     }
 
-                    Log.d("MinMin: " + minMin);
+                    // Log.d(TAG, "MinMin: " + minMin);
                     if (minMin <= 0) {
                         skyline++;
                     } else {
@@ -152,7 +150,7 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                 if (addToSkyline) {
                     skylineMap.put(wOuter.getKey(), wOuter);
                 }
-                Log.d("====================================");
+                // Log.d(TAG, "====================================");
             }
         } // for nodes
          /*
@@ -166,7 +164,8 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
         //context.write(one, text);
         for (Map.Entry<Long, Weather> w : skylineMap.entrySet()) {
             one.set(w.getKey());
-            context.write(one, skylineMap.get(w.getKey()));
+            Log.d(TAG, "Writing: " + w.getValue().getKey());
+            context.write(one, w.getValue());//skylineMap.get(w.getKey()));
         }
     }
 
