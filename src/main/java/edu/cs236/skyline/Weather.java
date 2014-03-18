@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Created by jason on 2/26/14.
  */
-public class Weather implements Writable, Comparable<Weather> {
+public class Weather implements Writable {
 
     private long key;
 
@@ -387,87 +387,6 @@ public class Weather implements Writable, Comparable<Weather> {
         sb.append(this.min);
 
         return sb.toString();
-    }
-
-    /**
-     * This compareTo function will decide whether this(a node)
-     * belongs in the final skyline calculation
-     *
-     * @param w a member of the skyline ArrayList
-     * @return int denoting domination
-     */
-    public int compareTo(Weather w) {
-        // outer
-        int nodes = 0;
-        // skyline
-        int skyline = 0;
-
-        int maxTemp = Reduce.maxComp(w.getTemp(), this.getTemp());
-        int maxDewp = Reduce.maxComp(w.getDewp(), this.getDewp());
-        int maxSlp = Reduce.maxComp(w.getSlp(), this.getSlp());
-        int minStp = Reduce.minComp(w.getStp(), this.getStp());
-        int minWdsp = Reduce.minComp(w.getWdsp(), this.getWdsp());
-        int maxMxspd = Reduce.minComp(w.getMxspd(), this.getMxspd());
-        int minGust = Reduce.minComp(w.getGust(), this.getGust());
-        int maxMax = Reduce.maxComp(w.getMax(), this.getMax());
-        int minMin = Reduce.minComp(w.getMin(), this.getMin());
-
-        if (w.dewp >= this.dewp) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.temp >= this.temp) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.slp >= this.slp) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.stp <= this.stp) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.wdsp <= this.wdsp) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.mxspd <= this.mxspd) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.gust <= this.gust) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.max >= this.max) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-        if (w.min <= this.min) {
-            skyline++;
-        } else {
-            nodes++;
-        }
-
-
-        return 1;
     }
 
 }

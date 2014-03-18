@@ -1,11 +1,13 @@
 package edu.cs236.skyline;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by jason on 3/2/14.
@@ -13,55 +15,75 @@ import java.io.IOException;
 public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
 
     private LongWritable id = new LongWritable();
+    public String TAG = "map";
 
-    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        String line = value.toString();
-        // get the number of reducertasks
-        int reducers = context.getNumReduceTasks();
-        // This is just a key to generate a unique key
-        long newKey = Skyline.getKey();
-        // generate the modulus for our weather object
-        long mod = newKey % Skyline.getMod();
+    public void map(LongWritable key, Text weather, Context context) throws IOException, InterruptedException {
+        String weatherString = weather.toString();
+        // create the object to hold our data
+        Weather w = new Weather();
+        System.out.println("Attempting to parse: " + weather);
+        // write the id to our LongWritable
+        //id.set(mod);
 
-        if (line.length() > 108) {
-            /**
-             * The file assumes a starting point of 1
-             * I need the following attributes from the file:
-             * StationID:   1-6     Int
-             * Year:        15-18   Int
-             * Moda:        19-22   Double
-             * Temp:        25-30   Double
-             * Dewp:        36-41   Double
-             * SLP:         47-52   Double
-             * Max:         103-108 Double
-             * STP:         58-63   Double
-             * WDSP:        79-83   Double
-             * MXSPD:       89-93   Double
-             * Gust:        96-100  Double
-             * Min:         111-116 Double
-             */
+        /**
+         * The file assumes a starting point of 1
+         * I need the following attributes from the file:
+         * StationID:   1-6     Int
+         * Year:        15-18   Int
+         * Moda:        19-22   Double
+         * Temp:        25-30   Double
+         * Dewp:        36-41   Double
+         * SLP:         47-52   Double
+         * Max:         103-108 Double
+         * STP:         58-63   Double
+         * WDSP:        79-83   Double
+         * MXSPD:       89-93   Double
+         * Gust:        96-100  Double
+         * Min:         111-116 Double
+         */
 
-            // create the object to hold our data
-            Weather w = new Weather();
-            // write the id to our LongWritable
-            id.set(mod);
-            // Attributes of our weather object
-            w.setKey(newKey);
-            w.setStation(line.substring(0, 6).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setYear(line.substring(14, 18).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setModa(line.substring(18, 22).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setTemp(line.substring(24, 30).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setDewp(line.substring(35, 41).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setSlp(line.substring(46, 52).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setMax(line.substring(102, 108).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setStp(line.substring(57, 63).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setWdsp(line.substring(78, 83).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setMxspd(line.substring(88, 93).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setGust(line.substring(95, 100).replaceAll("\\s+", "").replaceAll("\\*", ""));
-            w.setMin(line.substring(110, 116).replaceAll("\\s+", "").replaceAll("\\*", ""));
+        /*
+        this.key = in.readLong();
+        this.station = in.readInt();
+        this.year = in.readInt();
+        this.moda = in.readInt();
+        this.temp = in.readDouble();
+        this.dewp = in.readDouble();
+        this.slp = in.readDouble();
+        this.max = in.readDouble();
+        this.stp = in.readDouble();
+        this.wdsp = in.readDouble();
+        this.mxspd = in.readDouble();
+        this.gust = in.readDouble();
+        this.min = in.readDouble();
 
-            // push the object onto our data structure
-            context.write(id, w);
-        }// if line>108
-    }
+        */
+        List<String> values = new ArrayList<String>(Arrays.asList(weatherString.split("\\s*|\\s*")));
+        System.out.println("Size of values: " + values.size());
+        Log.d(TAG, "Parsed:" + weatherString + " into array");
+        // Attributes of our weather object
+        Log.d(TAG, "Parsed key: " + w.getKey());
+        w.setKey(Long.parseLong(values.get(0)));
+        Log.d(TAG, "Parsed station: " + w.getStation());
+        w.setStation(values.get(1));
+        Log.d(TAG, "Parsed station: " + values.get(2));
+        w.setYear(values.get(2));
+        Log.d(TAG, "Parsed station: " + values.get(3));
+        w.setModa(values.get(3));
+        Log.d(TAG, "Parsed station: " + values.get(4));
+        w.setTemp(values.get(4));
+        Log.d(TAG, "Parsed station: " + values.get(5));
+        w.setDewp(values.get(5));
+        w.setSlp(values.get(6));
+        w.setMax(values.get(7));
+        w.setStp(values.get(8));
+        w.setWdsp(values.get(9));
+        w.setMxspd(values.get(10));
+        w.setGust(values.get(11));
+        w.setMin(values.get(12));
+
+        //w.copyObject(weather);
+        id.set(w.getKey() % Skyline.getMod());
+        context.write(id, w);
+    }// map
 }// class

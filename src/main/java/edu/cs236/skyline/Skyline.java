@@ -23,7 +23,7 @@ public class Skyline {
 
     private static long key = 0;
     // we want this to start at 50k for 11000000 records
-    private static int mod = 1000;
+    private static int mod = 100;
 
     public static synchronized long getKey() {
         return key++;
@@ -56,14 +56,9 @@ public class Skyline {
         try {
             input = new Path(args[1]);
         } catch (ArrayIndexOutOfBoundsException e) {
-            input = new Path("hdfs://localhost/user/cloudera/in/oneHundredThousand");
+            input = new Path("hdfs://localhost/user/cloudera/in/small");
             // input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
         }
-/*        try {
-            output = new Path(args[2]);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            output = new Path("hdfs://localhost.localdomain/user/cloudera/out/" + x);
-        }*/
 
         while (getMod() >= 1) {
 
@@ -76,17 +71,19 @@ public class Skyline {
             } catch (ArrayIndexOutOfBoundsException e) {
                 output = new Path("hdfs://localhost.localdomain/user/cloudera/out/" + x);
             }
-            /**
-             * Phase 1: mod by 1000
-             */
+
             job.setOutputKeyClass(LongWritable.class);
             job.setOutputValueClass(Weather.class);
 
-            job.setMapperClass(Map.class);
+            if (x == 0) {
+                job.setMapperClass(InitMap.class);
+            } else {
+                job.setMapperClass(Map.class);
+            }
             job.setReducerClass(Reduce.class);
 
-            job.setInputFormatClass(TextInputFormat.class);
-            job.setOutputFormatClass(TextOutputFormat.class);
+            //job.setInputFormatClass(TextInputFormat.class);
+            //job.setOutputFormatClass(TextOutputFormat.class);
 
             job.setNumReduceTasks(reducers);
 
@@ -102,7 +99,7 @@ public class Skyline {
             }
 
             try {
-                input = new Path(args[1] + x);
+                input = new Path(args[2] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
                 input = new Path("hdfs://localhost/user/cloudera/out/" + x);
                 //input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
@@ -111,9 +108,9 @@ public class Skyline {
             setMod(10);
             x++;
 
-            if (mod == 1) {
+            /*if (mod == 1) {
                 mod--;
-            }
+            }*/
         }
 
         /*
