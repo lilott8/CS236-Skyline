@@ -24,8 +24,8 @@ public class Skyline {
     public static String TAG = "skyline";
     private static long key = 0;
     // we want this to start at 50k for 11000000 records
-    private static int mod = 100;
-    public static final int modder = 10;
+    private static int mod;
+    public static int modder;
 
     public static synchronized long getKey() {
         return key++;
@@ -50,13 +50,36 @@ public class Skyline {
         conf.set("io.serializations", "org.apache.hadoop.io.serializer.JavaSerialization,"
                 + "org.apache.hadoop.io.serializer.WritableSerialization");
 
+        // Number of reducer tasks
         try {
-            reducers = Integer.parseInt(args[0]);
+            if ((reducers = Integer.parseInt(args[0])) < 1) {
+                reducers = 1;
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             reducers = 1;
         }
+        // Modulus
         try {
-            input = new Path(args[1]);
+            if ((mod = Integer.parseInt(args[1])) < 1) {
+                mod = 1000;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            mod = 1000;
+        }
+        System.out.println("mod is: " + mod);
+        // modder
+        try {
+            if ((modder = Integer.parseInt(args[2])) < 1) {
+                modder = 10;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            modder = 10;
+        }
+        System.out.println("Modder is; " + modder);
+
+        // Path to input
+        try {
+            input = new Path(args[3]);
         } catch (ArrayIndexOutOfBoundsException e) {
             input = new Path("hdfs://localhost/user/cloudera/in/tiny");
             // input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
@@ -70,7 +93,7 @@ public class Skyline {
             job.setJarByClass(Skyline.class);
 
             try {
-                output = new Path(args[2] + x);
+                output = new Path(args[4] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
                 //Log.d(TAG, "output: hdfs://localhost/user/cloudera/out/"+x);
                 output = new Path("hdfs://localhost.localdomain/user/cloudera/out/" + x);
@@ -105,7 +128,7 @@ public class Skyline {
             }
 
             try {
-                input = new Path(args[2] + x);
+                input = new Path(args[4] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
                 //Log.d(TAG, "input: hdfs://localhost/user/cloudera/out/"+x);
                 input = new Path("hdfs://localhost/user/cloudera/out/" + x);
