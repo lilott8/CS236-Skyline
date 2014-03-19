@@ -17,6 +17,8 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
     //private IntWritable two = new IntWritable();
     private Text two = new Text();
     public String TAG = "reduce";
+    private static final int dominates = 9;
+    private static final int equals = 8;
 
     public static int minComp(double node, double skyline) {
         if (node < skyline) {
@@ -56,8 +58,15 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                     // Log.d(TAG, "Node: " + wOuter.toString());
                     // Log.d(TAG, "Skyline: " + wInner.getValue().toString());
                     // Log.d(TAG, "====================================");
-                    int skyline = 0;
-                    int node = 0;
+
+                    // 0 = equality
+                    // 1 = domination
+                    int[] skyline = new int[2];
+                    skyline[0] = 0;
+                    skyline[1] = 0;
+                    int[] node = new int[2];
+                    node[0] = 0;
+                    node[1] = 0;
 
                     int maxTemp = maxComp(wOuter.getTemp(), wInner.getValue().getTemp());
                     int maxDewp = maxComp(wOuter.getDewp(), wInner.getValue().getDewp());
@@ -71,81 +80,123 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                     //https://github.com/rweeks/util/blob/master/src/com/newbrightidea/util/RTree.java
 
                     // Log.d(TAG, "MaxTemp: " + maxTemp);
-                    if (maxTemp <= 0) {
-                        skyline++;
+                    if (maxTemp > 0) {
+                        node[1]++;
+                    } else if (maxTemp < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MaxDewp: " + maxDewp);
-                    if (maxDewp <= 0) {
-                        skyline++;
+                    if (maxDewp > 0) {
+                        node[1]++;
+                    } else if (maxDewp < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MaxSLP: " + maxSlp);
-                    if (maxSlp <= 0) {
-                        skyline++;
+                    if (maxSlp > 0) {
+                        node[1]++;
+                    } else if (maxSlp < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MinSTP: " + minStp);
-                    if (minStp <= 0) {
-                        skyline++;
+                    if (minStp > 0) {
+                        node[1]++;
+                    } else if (minStp < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MinWdsp: " + minWdsp);
-                    if (minWdsp <= 0) {
-                        skyline++;
+                    if (minWdsp > 0) {
+                        node[1]++;
+                    } else if (minWdsp < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MaxMxspd: " + maxMxspd);
-                    if (maxMxspd <= 0) {
-                        skyline++;
+                    if (maxMxspd > 0) {
+                        node[1]++;
+                    } else if (maxMxspd < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MinGust: " + minGust);
-                    if (minGust <= 0) {
-                        skyline++;
+                    if (minGust > 0) {
+                        node[1]++;
+                    } else if (minGust < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MaxMax: " + maxMax);
-                    if (maxMax <= 0) {
-                        skyline++;
+                    if (maxMax > 0) {
+                        node[1]++;
+                    } else if (maxMax < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
                     // Log.d(TAG, "MinMin: " + minMin);
-                    if (minMin <= 0) {
-                        skyline++;
+                    if (minMin > 0) {
+                        node[1]++;
+                    } else if (minMin < 0) {
+                        skyline[1]++;
                     } else {
-                        node++;
+                        node[0]++;
+                        skyline[0]++;
                     }
 
-                    if (node == 0) {
-                        break;
-                    } else if (skyline == 0) {
-                        addToSkyline = true;
+                    // The node is dominating the skyline
+                    if (node[0] == equals && node[1] == 1) {
+                        // remove the current object
                         skylineMap.remove(wInner.getKey());
+                        addToSkyline = true;
                         break;
                     }
-                    addToSkyline = true;
-                    /*
-                    if (node > skyline) {
-                        if (!skylineMap.containsKey(wOuter.getKey()))
-                            skylineMap.put(wOuter.getKey(), wOuter);
-                    }*/
+                    // the node dominates in all attributes
+                    else if (node[1] == dominates) {
+                        // remove the current object
+                        skylineMap.remove(wInner.getKey());
+                        addToSkyline = true;
+                        break;
+                    }
+                    // the skyline dominates in one attribute
+                    else if (skyline[0] == equals && skyline[1] == 1) {
+                        break;
+                    }
+                    // the skyline dominates
+                    else if (skyline[1] == dominates) {
+                        break;
+                    }
+                    // The node belongs in the skyline,
+                    // it dominates in one or more attributes
+                    else {
+                        addToSkyline = true;
+                        break;
+                    }
                 }// skyline
                 if (addToSkyline) {
                     skylineMap.put(wOuter.getKey(), wOuter);

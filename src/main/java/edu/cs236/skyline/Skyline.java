@@ -24,7 +24,7 @@ public class Skyline {
     public static String TAG = "skyline";
     private static long key = 0;
     // we want this to start at 50k for 11000000 records
-    private static int mod = 1000;
+    private static int mod = 100;
 
     public static synchronized long getKey() {
         return key++;
@@ -57,7 +57,7 @@ public class Skyline {
         try {
             input = new Path(args[1]);
         } catch (ArrayIndexOutOfBoundsException e) {
-            input = new Path("hdfs://localhost/user/cloudera/in/small");
+            input = new Path("hdfs://localhost/user/cloudera/in/tenThousand");
             // input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
         }
 
