@@ -57,20 +57,21 @@ public class Skyline {
         try {
             input = new Path(args[1]);
         } catch (ArrayIndexOutOfBoundsException e) {
-            input = new Path("hdfs://localhost/user/cloudera/in/tenThousand");
+            input = new Path("hdfs://localhost/user/cloudera/in/tiny");
             // input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
         }
 
         while (getMod() >= 1) {
 
-            Log.d(TAG, "getMod: " + getMod() + "\tx: " + x);
+            conf.set("mod", Integer.toString(mod));
             Job job = new Job(conf, "skyline");
 
             job.setJarByClass(Skyline.class);
 
             try {
-                output = new Path(args[2] + x);
+                output = new Path(args[1] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
+                //Log.d(TAG, "output: hdfs://localhost/user/cloudera/out/"+x);
                 output = new Path("hdfs://localhost.localdomain/user/cloudera/out/" + x);
             }
 
@@ -83,9 +84,6 @@ public class Skyline {
                 job.setMapperClass(Map.class);
             }
             job.setReducerClass(Reduce.class);
-
-            //job.setInputFormatClass(TextInputFormat.class);
-            //job.setOutputFormatClass(TextOutputFormat.class);
 
             job.setNumReduceTasks(reducers);
 
@@ -103,40 +101,13 @@ public class Skyline {
             try {
                 input = new Path(args[2] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
+                //Log.d(TAG, "input: hdfs://localhost/user/cloudera/out/"+x);
                 input = new Path("hdfs://localhost/user/cloudera/out/" + x);
                 //input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
             }
 
             setMod(10);
             x++;
-
-            /*if (mod == 1) {
-                mod--;
-            }*/
         }
-
-        /*
-        job.setOutputKeyClass(LongWritable.class);
-        job.setOutputValueClass(Weather.class);
-
-        job.setMapperClass(Map.class);
-        job.setReducerClass(Reduce.class);
-
-        job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
-
-        job.setNumReduceTasks(reducers);
-
-        FileInputFormat.addInputPath(job, input);
-        FileOutputFormat.setOutputPath(job, output);
-
-        try {
-            job.waitForCompletion(true);
-        } catch (InterruptedException e) {
-            System.out.println("Interrupted Exception");
-        } catch (ClassNotFoundException e) {
-            System.out.println("ClassNotFoundException");
-        }
-        */
     }
 }

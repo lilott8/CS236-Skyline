@@ -8,6 +8,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 import java.util.*;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jason on 3/2/14.
@@ -42,12 +43,12 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
 
     public void reduce(LongWritable key, Iterable<Weather> weather, Context context)
             throws IOException, InterruptedException {
-        HashMap<Long, Weather> skylineMap = new HashMap<Long, Weather>();
+        Map<Long, Weather> skylineMap = new ConcurrentHashMap<Long, Weather>();
         // Node array
+        int i = 0;
         for (Weather nodes : weather) {
             Weather wOuter = new Weather();
             wOuter.copyObject(nodes);
-
             if (skylineMap.isEmpty()) {
                 skylineMap.put(wOuter.getKey(), wOuter);
             } else {
@@ -61,12 +62,12 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                     // 0 = equality
                     // [n] = 1 = domination
 
-                    int[] skyline = new int[2];
-                    int[] node = new int[2];
+                    int skyline = 0;
+                    int node = 0;
                     // equality array
                     //0 = skyline
                     //1 = node
-                    int[] eq = new int[2];
+                    int eq = 0;
 
                     int maxTemp = maxComp(wOuter.getTemp(), wInner.getValue().getTemp());
                     int maxDewp = maxComp(wOuter.getDewp(), wInner.getValue().getDewp());
@@ -77,142 +78,118 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                     int minGust = minComp(wOuter.getGust(), wInner.getValue().getGust());
                     int maxMax = maxComp(wOuter.getMax(), wInner.getValue().getMax());
                     int minMin = minComp(wOuter.getMin(), wInner.getValue().getMin());
-                    //https://github.com/rweeks/util/blob/master/src/com/newbrightidea/util/RTree.java
 
                     // Log.d(TAG, "MaxTemp: " + maxTemp);
                     if (maxTemp > 0) {
-                        node[1]++;
+                        node++;
                     } else if (maxTemp < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MaxDewp: " + maxDewp);
                     if (maxDewp > 0) {
-                        node[1]++;
+                        node++;
                     } else if (maxDewp < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MaxSLP: " + maxSlp);
                     if (maxSlp > 0) {
-                        node[1]++;
+                        node++;
                     } else if (maxSlp < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MinSTP: " + minStp);
                     if (minStp > 0) {
-                        node[1]++;
+                        node++;
                     } else if (minStp < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MinWdsp: " + minWdsp);
                     if (minWdsp > 0) {
-                        node[1]++;
+                        node++;
                     } else if (minWdsp < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MaxMxspd: " + maxMxspd);
                     if (maxMxspd > 0) {
-                        node[1]++;
+                        node++;
                     } else if (maxMxspd < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MinGust: " + minGust);
                     if (minGust > 0) {
-                        node[1]++;
+                        node++;
                     } else if (minGust < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MaxMax: " + maxMax);
                     if (maxMax > 0) {
-                        node[1]++;
+                        node++;
                     } else if (maxMax < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
                     // Log.d(TAG, "MinMin: " + minMin);
                     if (minMin > 0) {
-                        node[1]++;
+                        node++;
                     } else if (minMin < 0) {
-                        skyline[1]++;
+                        skyline++;
                     } else {
-                        node[0]++;
-                        skyline[0]++;
+                        eq++;
                     }
 
-                    // The node is dominating the skyline
-                    if (node[0] == equals && node[1] == 1) {
-                        // remove the current object
-                        skylineMap.remove(wInner.getKey());
-                        addToSkyline = true;
-                        break;
-                    }
+                    // The node is dominating the skyline and everything is equal or less than
 
-                    // The node is dominating the skyline
-                    if (node[0] == equals && node[1] == 1) {
+                    if (skyline == 0 && node > 0) {
                         // remove the current object
+                        System.out.println("Removing " + wInner.getKey());
                         skylineMap.remove(wInner.getKey());
                         addToSkyline = true;
-                        break;
+                        i--;
+                        if (node == 1) break;
                     }
-                    // the node dominates in all attributes
-                    else if (node[1] == dominates) {
+                    // The node is equal to or less than skyline
+                    else if (node == 0) {
+                        addToSkyline = false;
+                        System.out.println("Equal");
                         // remove the current object
-                        skylineMap.remove(wInner.getKey());
+                        break;
+                    } else {
                         addToSkyline = true;
-                        break;
-                    }
-                    // the skyline dominates in one attribute
-                    else if (skyline[0] == equals && skyline[1] == 1) {
-                        break;
-                    }
-                    // the skyline dominates
-                    else if (skyline[1] == dominates) {
-                        break;
-                    }
-                    // The node belongs in the skyline,
-                    // it dominates in one or more attributes
-                    else {
-                        addToSkyline = true;
-                        break;
                     }
                 }// skyline
                 if (addToSkyline) {
+                    System.out.println("adding: " + wOuter.getKey());
                     skylineMap.put(wOuter.getKey(), wOuter);
+                    i++;
                 }
                 // Log.d(TAG, "====================================");
             }
         } // for nodes
         //context.write(one, text);
+        System.out.println(i + " " + skylineMap.size());
         for (Map.Entry<Long, Weather> w : skylineMap.entrySet()) {
             one.set(w.getKey());
             Log.d(TAG, "Writing: " + w.getValue().getKey());

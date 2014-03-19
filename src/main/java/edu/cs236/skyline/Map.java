@@ -58,6 +58,9 @@ public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
         this.min = in.readDouble();
 
         */
+
+        int mod = Integer.parseInt(context.getConfiguration().get("mod"));
+        System.out.println(mod);
         List<String> values = new ArrayList<String>(Arrays.asList(weatherString.split("\\|")));
         //Log.d(TAG, "Size of values: " + values.size());
         //Log.d(TAG, "Parsed:" + weatherString + " into array");
@@ -76,15 +79,15 @@ public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
         //Log.d(TAG, "Parsed station: " + values.get(5));
         w.setDewp(values.get(5));
         w.setSlp(values.get(6));
-        w.setMax(values.get(7));
-        w.setStp(values.get(8));
+        w.setMax(values.get(8));
+        w.setStp(values.get(7));
         w.setWdsp(values.get(9));
         w.setMxspd(values.get(10));
         w.setGust(values.get(11));
         w.setMin(values.get(12));
 
         //w.copyObject(weather);
-        id.set(w.getKey() % Skyline.getMod());
+        id.set(w.getKey() % mod);
         context.write(id, w);
     }// map
 }// class
