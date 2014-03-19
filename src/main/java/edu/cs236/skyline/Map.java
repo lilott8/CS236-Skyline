@@ -60,7 +60,6 @@ public class Map extends Mapper<LongWritable, Text, LongWritable, Weather> {
         */
 
         int mod = Integer.parseInt(context.getConfiguration().get("mod"));
-        System.out.println(mod);
         List<String> values = new ArrayList<String>(Arrays.asList(weatherString.split("\\|")));
         //Log.d(TAG, "Size of values: " + values.size());
         //Log.d(TAG, "Parsed:" + weatherString + " into array");

@@ -24,7 +24,8 @@ public class Skyline {
     public static String TAG = "skyline";
     private static long key = 0;
     // we want this to start at 50k for 11000000 records
-    private static int mod = 1000;
+    private static int mod = 100;
+    public static final int modder = 10;
 
     public static synchronized long getKey() {
         return key++;
@@ -83,7 +84,12 @@ public class Skyline {
             } else {
                 job.setMapperClass(Map.class);
             }
-            job.setReducerClass(Reduce.class);
+
+            if ((getMod() / modder) >= 1) {
+                job.setReducerClass(Reduce.class);
+            } else {
+                job.setReducerClass(FinalReduce.class);
+            }
 
             job.setNumReduceTasks(reducers);
 
@@ -106,7 +112,7 @@ public class Skyline {
                 //input = new Path("hdfs://localhost/user/cloudera/in/skyline.in");
             }
 
-            setMod(10);
+            setMod(modder);
             x++;
         }
     }

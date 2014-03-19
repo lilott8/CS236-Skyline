@@ -1,22 +1,21 @@
 package edu.cs236.skyline;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by jason on 3/2/14.
+ * Created by jason on 3/19/14.
  */
-public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather> {
-    private LongWritable one = new LongWritable();
+public class FinalReduce extends Reducer<LongWritable, Weather, Text, Weather> {
+
+    //private LongWritable one = new LongWritable();
     //private IntWritable two = new IntWritable();
-    private Text two = new Text();
+    private Text one = new Text();
     public String TAG = "reduce";
 
     public static int minComp(double node, double skyline) {
@@ -41,7 +40,7 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
 
     public void reduce(LongWritable key, Iterable<Weather> weather, Context context)
             throws IOException, InterruptedException {
-        Map<Long, Weather> skylineMap = new ConcurrentHashMap<Long, Weather>();
+        java.util.Map<Long, Weather> skylineMap = new ConcurrentHashMap<Long, Weather>();
         // Node array
         int i = 0;
         for (Weather nodes : weather) {
@@ -52,7 +51,7 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
             } else {
                 // Skyline array
                 boolean addToSkyline = false;
-                for (Map.Entry<Long, Weather> wInner : skylineMap.entrySet()) {
+                for (java.util.Map.Entry<Long, Weather> wInner : skylineMap.entrySet()) {
                     // Log.d(TAG, "Comparing: ");
                     // Log.d(TAG, "Node: " + wOuter.toString());
                     // Log.d(TAG, "Skyline: " + wInner.getValue().toString());
@@ -184,10 +183,12 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
             }
         } // for nodes
         //context.write(one, text);
-        for (Map.Entry<Long, Weather> w : skylineMap.entrySet()) {
-            one.set(w.getKey());
-            Log.d(TAG, "Writing: " + w.getValue().getKey());
-            context.write(one, w.getValue());//skylineMap.get(w.getKey()));
+        for (java.util.Map.Entry<Long, Weather> w : skylineMap.entrySet()) {
+            String id = w.getValue().getStation() + "_" + w.getValue().getYear() + "_" + w.getValue().getModa();
+            one.set(id);
+            context.write(one, w.getValue());
         }
     }
+
+
 }
