@@ -70,7 +70,7 @@ public class Skyline {
             job.setJarByClass(Skyline.class);
 
             try {
-                output = new Path(args[1] + x);
+                output = new Path(args[2] + x);
             } catch (ArrayIndexOutOfBoundsException e) {
                 //Log.d(TAG, "output: hdfs://localhost/user/cloudera/out/"+x);
                 output = new Path("hdfs://localhost.localdomain/user/cloudera/out/" + x);
