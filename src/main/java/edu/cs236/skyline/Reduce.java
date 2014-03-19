@@ -220,28 +220,3 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
         }
     }
 }
-/*
-else if (skyline == 0) {
-                        addToSkyline = true;
-                        skylineMap.remove(wInner.getKey());
-                        break;
-                        }
- */
-
-
-
-
-
-/*
-// 0 = equality
-                    // 1 = domination
-                    // our node = skyline case
-                    if ( skyline[1] >= node[1]) {
-                        break;
-                    } else if (skyline[0] == node[0] && (skyline[1] - dominates) < node[1]) {
-                        addToSkyline = true;
-                        skylineMap.remove(wInner.getKey());
-                        break;
-                    }
-                    addToSkyline = true;
- */
