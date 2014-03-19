@@ -41,7 +41,7 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
     }
 
     public void reduce(LongWritable key, Iterable<Weather> weather, Context context)
-    throws IOException, InterruptedException {
+            throws IOException, InterruptedException {
         HashMap<Long, Weather> skylineMap = new HashMap<Long, Weather>();
         // Node array
         for (Weather nodes : weather) {
@@ -58,15 +58,15 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                     // Log.d(TAG, "Node: " + wOuter.toString());
                     // Log.d(TAG, "Skyline: " + wInner.getValue().toString());
                     // Log.d(TAG, "====================================");
-
                     // 0 = equality
-                    // 1 = domination
+                    // [n] = 1 = domination
+
                     int[] skyline = new int[2];
-                    skyline[0] = 0;
-                    skyline[1] = 0;
                     int[] node = new int[2];
-                    node[0] = 0;
-                    node[1] = 0;
+                    // equality array
+                    //0 = skyline
+                    //1 = node
+                    int[] eq = new int[2];
 
                     int maxTemp = maxComp(wOuter.getTemp(), wInner.getValue().getTemp());
                     int maxDewp = maxComp(wOuter.getDewp(), wInner.getValue().getDewp());
@@ -176,6 +176,14 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
                         addToSkyline = true;
                         break;
                     }
+
+                    // The node is dominating the skyline
+                    if (node[0] == equals && node[1] == 1) {
+                        // remove the current object
+                        skylineMap.remove(wInner.getKey());
+                        addToSkyline = true;
+                        break;
+                    }
                     // the node dominates in all attributes
                     else if (node[1] == dominates) {
                         // remove the current object
@@ -211,5 +219,29 @@ public class Reduce extends Reducer<LongWritable, Weather, LongWritable, Weather
             context.write(one, w.getValue());//skylineMap.get(w.getKey()));
         }
     }
-
 }
+/*
+else if (skyline == 0) {
+                        addToSkyline = true;
+                        skylineMap.remove(wInner.getKey());
+                        break;
+                        }
+ */
+
+
+
+
+
+/*
+// 0 = equality
+                    // 1 = domination
+                    // our node = skyline case
+                    if ( skyline[1] >= node[1]) {
+                        break;
+                    } else if (skyline[0] == node[0] && (skyline[1] - dominates) < node[1]) {
+                        addToSkyline = true;
+                        skylineMap.remove(wInner.getKey());
+                        break;
+                    }
+                    addToSkyline = true;
+ */
