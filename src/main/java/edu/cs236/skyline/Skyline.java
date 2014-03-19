@@ -24,7 +24,7 @@ public class Skyline {
     public static String TAG = "skyline";
     private static long key = 0;
     // we want this to start at 50k for 11000000 records
-    private static int mod = 100;
+    private static int mod = 1000;
 
     public static synchronized long getKey() {
         return key++;
